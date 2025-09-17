@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Menü</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Szia, {{ username }}!</h2>
+    <a href="{{ url_for('upload') }}"><button>Feltöltés</button></a>
+    <a href="{{ url_for('download') }}"><button>Letöltés</button></a>
+    <a href="{{ url_for('logout') }}"><button>Kijelentkezés</button></a>
+  </div>
+</body>
+</html>
