@@ -1,22 +1,14 @@
-<!doctype html>
-<html>
-<head>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <title>Bejelentkezés</title>
-</head>
-<body>
-  <div class="container">
-    <h2>Bejelentkezés</h2>
-    <form method="post">
-      <input type="text" name="username" placeholder="Felhasználónév" required><br>
-      <input type="password" name="password" placeholder="Jelszó" required><br>
-      <input type="submit" value="Belépés">
-    </form>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <p style="color:red">{{ messages[0] }}</p>
-      {% endif %}
-    {% endwith %}
-  </div>
-</body>
-</html>
+@app.route("/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # Egyszerű szöveges ellenőrzés hash nélkül
+        if username in USERS and USERS[username] == password:
+            session["username"] = username
+            os.makedirs(user_folder(username), exist_ok=True)
+            return redirect(url_for("menu"))
+        else:
+            flash("Hibás felhasználónév vagy jelszó!")
+    return render_template("login.html")
