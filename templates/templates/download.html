@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Letöltés</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Fájljaid</h2>
+    <ul>
+      {% for f in files %}
+        <li><a href="{{ url_for('files', username=username, filename=f) }}">{{ f }}</a></li>
+      {% else %}
+        <p>Nincs feltöltött fájlod.</p>
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('menu') }}"><button>Vissza</button></a>
+  </div>
+</body>
+</html>
