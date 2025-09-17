@@ -11,4 +11,6 @@ def login():
             return redirect(url_for("menu"))
         else:
             flash("Hibás felhasználónév vagy jelszó!")
-    return render_template("login.html")
+  return redirect(url_for("menu"))
+
+
