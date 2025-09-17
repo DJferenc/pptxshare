@@ -1,1 +1,5 @@
+{
+  "user01": "pbkdf2:sha256:260000$abcdef$123456...",
+  "user02": "pbkdf2:sha256:260000$abcdef$123456..."
+}
 
