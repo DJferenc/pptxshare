@@ -3,8 +3,10 @@ import os, json
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import os
 app = Flask(__name__)
-app.secret_key = "topsecretadmin"
+app.secret_key = os.environ.get("SECRET_KEY", "topsecretadmin")
+
 
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"ppt", "pptx", "pdf", "docx"}
