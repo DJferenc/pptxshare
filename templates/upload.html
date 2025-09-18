@@ -1,22 +1,20 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="hu">
 <head>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
   <title>Feltöltés</title>
 </head>
-<body>
-  <div class="container">
-    <h2>Fájl feltöltése</h2>
-    <form method="post" enctype="multipart/form-data">
-      <input type="file" name="file" required><br>
-      <input type="submit" value="Feltöltés">
-    </form>
-    <a href="{{ url_for('menu') }}"><button>Vissza</button></a>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <p style="color:green">{{ messages[0] }}</p>
-      {% endif %}
-    {% endwith %}
-  </div>
+<body style="background:black; color:white; font-family:sans-serif;">
+  <h2>Fájl feltöltése</h2>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Feltöltés</button>
+  </form>
+  <p><a href="/menu" style="color:yellow;">⬅ Vissza a menübe</a></p>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p style="color:lime;">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
 </body>
 </html>
