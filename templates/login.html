@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="hu">
 <head>
-    <title>Bejelentkezés</title>
+  <meta charset="UTF-8">
+  <title>Bejelentkezés</title>
 </head>
-<body>
-    <form method="POST">
-        Felhasználónév: <input type="text" name="username"><br>
-        Jelszó: <input type="password" name="password"><br>
-        <input type="submit" value="Belépés">
-    </form>
+<body style="background:black; color:white; font-family:sans-serif;">
+  <h2>Bejelentkezés</h2>
+  <form method="post">
+    <p>Felhasználónév: <input type="text" name="username"></p>
+    <p>Jelszó: <input type="password" name="password"></p>
+    <button type="submit">Belépés</button>
+  </form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p style="color:red;">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
 </body>
 </html>
