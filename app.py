@@ -1,28 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, flash
 import os, json
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash, generate_password_hash
 
-import os
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "topsecretadmin")
-
+app.secret_key = "topsecretadmin"
 
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"ppt", "pptx", "pdf", "docx"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Felhasználók (kezdetben user01-user40, hash-elve)
+# Felhasználók (egyszerű jelszóval, NEM hash-elve)
 try:
     with open("users.json", "r") as f:
         USERS = json.load(f)
 except:
-    # Ha nincs users.json, generáljunk sablont
-    USERS = {}
-    for i in range(1, 41):
-        username = f"user{i:02d}"
-        password = f"jelszo{i:02d}"
-        USERS[username] = generate_password_hash(password)
+    USERS = {"jonasferenc": "gamer006", "user01": "jelszo01"}  # ide felvehetsz több usert
     with open("users.json", "w") as f:
         json.dump(USERS, f)
 
@@ -38,7 +30,8 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if username in USERS and check_password_hash(USERS[username], password):
+        # Egyszerű szöveges ellenőrzés
+        if username in USERS and USERS[username] == password:
             session["username"] = username
             os.makedirs(user_folder(username), exist_ok=True)
             return redirect(url_for("menu"))
