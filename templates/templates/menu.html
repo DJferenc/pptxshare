@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title>Menü</title>
+    <meta charset="UTF-8">
+    <title>Menü</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body style="background:black; color:white; font-family:sans-serif;">
-  <h1>Szia, {{ username }}!</h1>
-  <ul>
-    <li><a href="/upload" style="color:lime;">📤 Fájl feltöltése</a></li>
-    <li><a href="/download" style="color:cyan;">📥 Fájl letöltése</a></li>
-    <li><a href="/logout" style="color:red;">🚪 Kijelentkezés</a></li>
-  </ul>
+<body>
+    <div class="container">
+        <h1>Üdv, {{ username }}!</h1>
+        <div class="menu-buttons">
+            <a href="{{ url_for('upload') }}" class="btn">Feltöltés</a>
+            <a href="{{ url_for('download') }}" class="btn">Letöltés</a>
+            <a href="{{ url_for('logout') }}" class="btn logout">Kijelentkezés</a>
+        </div>
+    </div>
 </body>
 </html>
