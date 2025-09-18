@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Letöltés</title>
+</head>
+<body style="background:black; color:white; font-family:sans-serif;">
+  <h2>{{ username }} fájljai</h2>
+  <ul>
+    {% for file in files %}
+      <li><a href="/files/{{ username }}/{{ file }}" style="color:cyan;">{{ file }}</a></li>
+    {% else %}
+      <p>Nincs feltöltött fájlod.</p>
+    {% endfor %}
+  </ul>
+  <p><a href="/menu" style="color:yellow;">⬅ Vissza a menübe</a></p>
+</body>
+</html>

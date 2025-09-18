@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Menü</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Üdv, {{ username }}!</h1>
+        <div class="menu-buttons">
+            <a href="{{ url_for('upload') }}" class="btn">Feltöltés</a>
+            <a href="{{ url_for('download') }}" class="btn">Letöltés</a>
+            <a href="{{ url_for('logout') }}" class="btn logout">Kijelentkezés</a>
+        </div>
+    </div>
+</body>
+</html>
