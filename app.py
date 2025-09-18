@@ -9,12 +9,17 @@ UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"ppt", "pptx", "pdf", "docx"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Felhasználók (egyszerű jelszóval, NEM hash-elve)
+# Felhasználók betöltése users.json-ból
 try:
     with open("users.json", "r") as f:
         USERS = json.load(f)
 except:
-    USERS = {"jonasferenc": "gamer006", "user01": "jelszo01"}  # ide felvehetsz több usert
+    # Ha nincs users.json, létrehozunk egy alap példát
+    USERS = {
+        "kiispista": "titkos123",
+        "nagylany": "almafa",
+        "ferike99": "mateklecke"
+    }
     with open("users.json", "w") as f:
         json.dump(USERS, f)
 
