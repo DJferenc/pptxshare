@@ -1,16 +1,13 @@
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        # Egyszerű szöveges ellenőrzés hash nélkül
-        if username in USERS and USERS[username] == password:
-            session["username"] = username
-            os.makedirs(user_folder(username), exist_ok=True)
-            return redirect(url_for("menu"))
-        else:
-            flash("Hibás felhasználónév vagy jelszó!")
-  return redirect(url_for("menu"))
-
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bejelentkezés</title>
+</head>
+<body>
+    <form method="POST">
+        Felhasználónév: <input type="text" name="username"><br>
+        Jelszó: <input type="password" name="password"><br>
+        <input type="submit" value="Belépés">
+    </form>
+</body>
+</html>
