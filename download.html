@@ -6,13 +6,30 @@
 </head>
 <body style="background:black; color:white; font-family:sans-serif;">
   <h2>{{ username }} fájljai</h2>
+
+  <!-- Keresőmező -->
+  <form method="GET" action="{{ url_for('download') }}">
+    <input type="text" name="search" placeholder="Keresés..." value="{{ query }}" 
+           style="padding:5px; border-radius:5px;">
+    <button type="submit" style="padding:5px; border-radius:5px;">🔍 Keresés</button>
+  </form>
+
   <ul>
     {% for file in files %}
-      <li><a href="/files/{{ username }}/{{ file }}" style="color:cyan;">{{ file }}</a></li>
+      <li>
+        <a href="/files/{{ username }}/{{ file }}" style="color:cyan;">{{ file }}</a>
+        <!-- Törlés gomb -->
+        <form method="POST" action="{{ url_for('delete_file', filename=file) }}" style="display:inline;">
+          <button type="submit" style="margin-left:10px; background:red; color:white; border:none; padding:3px 6px; border-radius:4px;">
+            ❌ Törlés
+          </button>
+        </form>
+      </li>
     {% else %}
       <p>Nincs feltöltött fájlod.</p>
     {% endfor %}
   </ul>
+
   <p><a href="/menu" style="color:yellow;">⬅ Vissza a menübe</a></p>
 </body>
 </html>
