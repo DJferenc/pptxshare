@@ -14,7 +14,6 @@ try:
     with open("users.json", "r") as f:
         USERS = json.load(f)
 except:
-    # Ha nincs users.json, létrehozunk egy alap példát
     USERS = {
         "kiispista": "titkos123",
         "nagylany": "almafa",
@@ -35,7 +34,6 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        # Egyszerű szöveges ellenőrzés
         if username in USERS and USERS[username] == password:
             session["username"] = username
             os.makedirs(user_folder(username), exist_ok=True)
@@ -72,20 +70,46 @@ def upload():
             return redirect(url_for("upload"))
     return render_template("upload.html")
 
-@app.route("/download")
+# Letöltés + keresés
+@app.route("/download", methods=["GET", "POST"])
 def download():
     if "username" not in session:
         return redirect(url_for("login"))
+
     path = user_folder(session["username"])
     os.makedirs(path, exist_ok=True)
     files = os.listdir(path)
-    return render_template("download.html", files=files, username=session["username"])
 
+    # keresés
+    query = request.args.get("search", "").lower()
+    if query:
+        files = [f for f in files if query in f.lower()]
+
+    return render_template("download.html", files=files, username=session["username"], query=query)
+
+# Fájl letöltés
 @app.route("/files/<username>/<filename>")
 def files(username, filename):
     if "username" not in session or session["username"] != username:
         return redirect(url_for("login"))
     return send_from_directory(user_folder(username), filename)
+
+# Fájl törlés
+@app.route("/delete/<filename>", methods=["POST"])
+def delete_file(filename):
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    path = user_folder(session["username"])
+    file_path = os.path.join(path, filename)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        flash(f"{filename} törölve lett!")
+    else:
+        flash("A fájl nem található!")
+
+    return redirect(url_for("download"))
 
 @app.route("/logout")
 def logout():
@@ -95,3 +119,4 @@ def logout():
 if __name__ == "__main__":
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     app.run(debug=True)
+
