@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, flash
 import os, json
 from werkzeug.utils import secure_filename
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 app = Flask(__name__)
 app.secret_key = "topsecretadmin"
@@ -9,7 +12,19 @@ UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"ppt", "pptx", "pdf", "docx"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Felhasználók betöltése users.json-ból
+# Google Drive beállítások
+DRIVE_FOLDER_ID = "10cFTFJSbs7cXQ9E_1-iKXibyA6OpPtWj"
+SERVICE_ACCOUNT_FILE = "credentials.json"  # ezt a Renderre is feltöltöd Secret Files-ba
+
+# Hitelesítés
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE,
+    scopes=["https://www.googleapis.com/auth/drive.file"]
+)
+drive_service = build("drive", "v3", credentials=creds)
+
+
+# FELHASZNÁLÓK
 try:
     with open("users.json", "r") as f:
         USERS = json.load(f)
@@ -22,11 +37,27 @@ except:
     with open("users.json", "w") as f:
         json.dump(USERS, f)
 
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def user_folder(username):
     return os.path.join(app.config["UPLOAD_FOLDER"], username)
+
+
+# Fájl feltöltése a Google Drive-ra
+def upload_to_drive(filepath, filename):
+    file_metadata = {
+        "name": filename,
+        "parents": [DRIVE_FOLDER_ID]
+    }
+    media = MediaFileUpload(filepath, resumable=True)
+    uploaded_file = drive_service.files().create(
+        body=file_metadata, media_body=media, fields="id"
+    ).execute()
+    return uploaded_file.get("id")
+
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -42,11 +73,13 @@ def login():
             flash("Hibás felhasználónév vagy jelszó!")
     return render_template("login.html")
 
+
 @app.route("/menu")
 def menu():
     if "username" not in session:
         return redirect(url_for("login"))
     return render_template("menu.html", username=session["username"])
+
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -57,20 +90,28 @@ def upload():
         if "file" not in request.files:
             flash("Nincs fájl!")
             return redirect(request.url)
+
         file = request.files["file"]
         if file.filename == "":
             flash("Nincs kiválasztva fájl!")
             return redirect(request.url)
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            path = user_folder(session["username"])
-            os.makedirs(path, exist_ok=True)
-            file.save(os.path.join(path, filename))
-            flash("Sikeres feltöltés!")
+            temp_path = os.path.join("temp", filename)
+            os.makedirs("temp", exist_ok=True)
+            file.save(temp_path)
+
+            # Feltöltés Google Drive-ra
+            file_id = upload_to_drive(temp_path, filename)
+            flash(f"Sikeres feltöltés! (Drive ID: {file_id})")
+
+            os.remove(temp_path)
             return redirect(url_for("upload"))
+
     return render_template("upload.html")
 
-# Letöltés + keresés
+
 @app.route("/download", methods=["GET", "POST"])
 def download():
     if "username" not in session:
@@ -80,21 +121,20 @@ def download():
     os.makedirs(path, exist_ok=True)
     files = os.listdir(path)
 
-    # keresés
     query = request.args.get("search", "").lower()
     if query:
         files = [f for f in files if query in f.lower()]
 
     return render_template("download.html", files=files, username=session["username"], query=query)
 
-# Fájl letöltés
+
 @app.route("/files/<username>/<filename>")
 def files(username, filename):
     if "username" not in session or session["username"] != username:
         return redirect(url_for("login"))
     return send_from_directory(user_folder(username), filename)
 
-# Fájl törlés
+
 @app.route("/delete/<filename>", methods=["POST"])
 def delete_file(filename):
     if "username" not in session:
@@ -111,45 +151,14 @@ def delete_file(filename):
 
     return redirect(url_for("download"))
 
+
 @app.route("/logout")
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
 
+
 if __name__ == "__main__":
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs("temp", exist_ok=True)
     app.run(debug=True)
-
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-import os, pickle
-
-SCOPES = ["https://www.googleapis.com/auth/drive.file"]
-FOLDER_ID = "10cFTFJSbs7cXQ9E_1-iKXibyA6OpPtWj"
-
-def get_drive_service():
-    creds = None
-    if os.path.exists("token.pickle"):
-        with open("token.pickle", "rb") as token:
-            creds = pickle.load(token)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open("token.pickle", "wb") as token:
-            pickle.dump(creds, token)
-    return build("drive", "v3", credentials=creds)
-
-def upload_to_drive(filepath, filename):
-    service = get_drive_service()
-    file_metadata = {"name": filename, "parents": [FOLDER_ID]}
-    media = MediaFileUpload(filepath, resumable=True)
-    uploaded = service.files().create(
-        body=file_metadata, media_body=media, fields="id").execute()
-    return uploaded.get("id")
-
