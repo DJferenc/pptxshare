@@ -13,7 +13,7 @@ ALLOWED_EXTENSIONS = {"ppt", "pptx", "pdf", "docx"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # Google Drive beállítások
-DRIVE_FOLDER_ID = "10cFTFJSbs7cXQ9E_1-iKXibyA6OpPtWj"
+DRIVE_FOLDER_ID = "1hP5mBwWm3aQa2hiYqShyauXRiRcGcYCE"
 SERVICE_ACCOUNT_FILE = "credentials.json"  # ezt a Renderre is feltöltöd Secret Files-ba
 
 # Hitelesítés
