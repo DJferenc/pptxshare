@@ -70,7 +70,7 @@ def login():
             os.makedirs(user_folder(username), exist_ok=True)
             return redirect(url_for("menu"))
         else:
-            flash("Hibás felhasználónév vagy jelszó!")
+            flash("Hibás felhasználónév vagy jelszó próbáld újra!")
     return render_template("login.html")
 
 
