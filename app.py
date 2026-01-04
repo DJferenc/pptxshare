@@ -14,7 +14,11 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError("❌ SUPABASE_URL vagy SUPABASE_KEY nincs beállítva a Renderben")
+
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # Felhasználók betöltése users.json-ból
 try:
